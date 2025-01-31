@@ -170,7 +170,8 @@ function Counter() {
 
 function IOSSlider() {
   const constraintsRef = React.useRef<HTMLDivElement>(null);
-  const scaleY = useMotionValue(0);
+  const _scaleY = useMotionValue(0);
+  const scaleY = useSpring(_scaleY, { stiffness: 80 });
 
   return (
     <div className="bg-gray-700 rounded-xl size-56 grid place-content-center">
