@@ -8,9 +8,11 @@ import {
   useTransform,
 } from "motion/react";
 import React from "react";
-import { Link, Route, Routes } from "react-router";
+import { Link, Route, Routes, useMatch, useNavigate } from "react-router";
 
 function App() {
+  const navi = useNavigate();
+  const isIndex = useMatch("/");
   return (
     <div className="bg-gray-900 h-screen relative">
       <div className="container mx-auto flex items-center justify-center h-full">
@@ -21,6 +23,14 @@ function App() {
           <Route path="counter" element={<Counter />} />
           <Route path="ios-slider" element={<IOSSlider />} />
         </Routes>
+        {!isIndex && (
+          <button
+            className="bg-purple-500 text-white px-2 py-1 rounded absolute bottom-[10%] right-[17%]"
+            onClick={() => navi(-1)}
+          >
+            Go back
+          </button>
+        )}
       </div>
     </div>
   );
