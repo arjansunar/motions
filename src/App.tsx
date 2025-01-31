@@ -178,7 +178,7 @@ function IOSSlider() {
       <div ref={constraintsRef}>
         <motion.div
           className="bg-black h-36 w-18 overflow-hidden rounded-3xl relative"
-          onDrag={(e, info) => {
+          onDrag={(_, info) => {
             const boundingbox = constraintsRef.current?.getBoundingClientRect();
             if (!boundingbox) return;
             const height = boundingbox.height;
