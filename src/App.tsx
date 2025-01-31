@@ -174,15 +174,9 @@ function IOSSlider() {
 
   return (
     <div className="bg-gray-700 rounded-xl size-56 grid place-content-center">
-      <motion.div
-        ref={constraintsRef}
-        className="bg-black h-36 w-18 overflow-hidden rounded-3xl relative"
-      >
-        <div
-          className="bg-yellow-400 cursor-none pointer-events-none size-4 rounded-full absolute bottom-3 left-1/2 -translate-x-1/2 z-20"
-          id="sun"
-        ></div>
+      <div ref={constraintsRef}>
         <motion.div
+          className="bg-black h-36 w-18 overflow-hidden rounded-3xl relative"
           onDrag={(e, info) => {
             const boundingbox = constraintsRef.current?.getBoundingClientRect();
             if (!boundingbox) return;
@@ -191,20 +185,40 @@ function IOSSlider() {
             const mapped = transform(progress, [0, height], [1, 0]);
             scaleY.set(mapped);
           }}
-          dragElastic={0}
+          dragElastic={0.01}
           drag="y"
           dragConstraints={constraintsRef}
-          className="bg-transparent w-full h-6 z-30 absolute bottom-0"
-        />
-        <motion.div
-          id="brightness"
-          style={{
-            scaleY: scaleY,
-            transformOrigin: "50% 100% 0px",
-          }}
-          className="absolute -inset-1 bg-gray-100 border pointer-events-none"
-        ></motion.div>
-      </motion.div>
+        >
+          <div
+            className="cursor-none absolute pointer-events-none bottom-3 left-1/2 -translate-x-1/2 z-20"
+            id="sun"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width={40}
+              height={40}
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#ffdd78"
+              strokeWidth={2}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              pointerEvents="none"
+            >
+              <circle cx={12} cy={12} r={4} stroke="#fecc00" fill="#fecc00" />
+              <path d="M12 3v1M12 20v1M3 12h1M20 12h1M18.364 5.636l-.707.707M6.343 17.657l-.707.707M5.636 5.636l.707.707M17.657 17.657l.707.707" />
+            </svg>
+          </div>
+          <motion.div
+            id="brightness"
+            style={{
+              scaleY: scaleY,
+              transformOrigin: "50% 100% 0px",
+            }}
+            className="absolute -inset-1 bg-gray-100 border pointer-events-none"
+          ></motion.div>
+        </motion.div>
+      </div>
     </div>
   );
 }
