@@ -1,4 +1,4 @@
-import { frame } from "motion";
+import { frame, transform } from "motion";
 import {
   AnimatePresence,
   animate,
@@ -171,19 +171,6 @@ function Counter() {
 function IOSSlider() {
   const constraintsRef = React.useRef<HTMLDivElement>(null);
   const scaleY = useMotionValue(0);
-  const [box, setBox] = React.useState()
-
-  function getTop(ref: ) {
-if (!ref.current) return;
-
-    const boundingbox = constraintsRef.current.getBoundingClientRect();
-  }
-  React.useEffect(() => {
-    if (!constraintsRef.current) return;
-
-    const boundingbox = constraintsRef.current.getBoundingClientRect();
-    console.log({ boundingbox });
-  }, []);
 
   return (
     <div className="bg-gray-700 rounded-xl size-56 grid place-content-center">
@@ -192,20 +179,22 @@ if (!ref.current) return;
         className="bg-black h-36 w-18 overflow-hidden rounded-3xl relative"
       >
         <div
-          className="bg-yellow-400  size-4 rounded-full absolute bottom-3 left-1/2 -translate-x-1/2 z-10"
+          className="bg-yellow-400 cursor-none pointer-events-none size-4 rounded-full absolute bottom-3 left-1/2 -translate-x-1/2 z-20"
           id="sun"
         ></div>
         <motion.div
           onDrag={(e, info) => {
-            const progress = info.point.y;
-            console.log({
-              progress,
-            });
+            const boundingbox = constraintsRef.current?.getBoundingClientRect();
+            if (!boundingbox) return;
+            const height = boundingbox.height;
+            const progress = info.point.y - boundingbox.top;
+            const mapped = transform(progress, [0, height], [1, 0]);
+            scaleY.set(mapped);
           }}
           dragElastic={0}
           drag="y"
           dragConstraints={constraintsRef}
-          className="bg-red-100 w-full h-1"
+          className="bg-transparent w-full h-6 z-30 absolute bottom-0"
         />
         <motion.div
           id="brightness"
@@ -213,7 +202,7 @@ if (!ref.current) return;
             scaleY: scaleY,
             transformOrigin: "50% 100% 0px",
           }}
-          className="absolute inset-0 bg-gray-100"
+          className="absolute -inset-1 bg-gray-100 border pointer-events-none"
         ></motion.div>
       </motion.div>
     </div>
