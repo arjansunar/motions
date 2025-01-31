@@ -28,7 +28,7 @@ function App() {
             className="bg-purple-500 text-white px-2 py-1 rounded absolute bottom-[10%] right-[17%]"
             onClick={() => navi(-1)}
           >
-            Go back
+            prev
           </button>
         )}
       </div>
