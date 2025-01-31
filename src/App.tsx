@@ -1,4 +1,10 @@
-import { AnimatePresence, motion } from "motion/react";
+import { frame } from "motion";
+import {
+  AnimatePresence,
+  motion,
+  useMotionValue,
+  useSpring,
+} from "motion/react";
 import React from "react";
 import { Link, Route, Routes } from "react-router";
 
@@ -9,6 +15,7 @@ function App() {
         <Routes>
           <Route index element={<Enter />} />
           <Route path="exit-animation" element={<Exit />} />
+          <Route path="follow-pointer" element={<FollowPointer />} />
         </Routes>
       </div>
     </div>
@@ -27,7 +34,7 @@ function Enter() {
         }}
       />
       <Link
-        to="exit-animation"
+        to="/exit-animation"
         className="bg-purple-500 text-white px-2 py-1 rounded absolute bottom-[10%] right-[10%]"
       >
         next
@@ -40,12 +47,19 @@ function Exit() {
   const [show, setShow] = React.useState(true);
   return (
     <div className="space-y-4">
-      <button
-        className="px-2 py-1 absolute top-2/3 left-[50%] -translate-x-1/2 rounded bg-rose-500 text-white"
+      <motion.button
+        whileTap={{ scale: 0.9 }}
+        whileHover={{
+          scale: 1.1,
+          transition: {
+            duration: 0.2,
+          },
+        }}
+        className="px-2 py-1 hover:cursor-pointer absolute top-3/5 left-[50%] -translate-x-1/2 rounded bg-rose-500 text-white"
         onClick={() => setShow((prev) => !prev)}
       >
         Toggle box
-      </button>
+      </motion.button>
       <AnimatePresence>
         {show && (
           <motion.div
@@ -65,8 +79,56 @@ function Exit() {
           />
         )}
       </AnimatePresence>
+      <Link
+        to="/follow-pointer"
+        className="bg-purple-500 text-white px-2 py-1 rounded absolute bottom-[10%] right-[10%]"
+      >
+        next
+      </Link>
     </div>
   );
 }
 
+function FollowPointer() {
+  const ref = React.useRef<HTMLDivElement>(null);
+  const { x, y } = useFollowPointer(ref);
+  return (
+    <motion.div
+      ref={ref}
+      className="size-20 rounded-full bg-rose-800"
+      style={{
+        x,
+        y,
+      }}
+    />
+  );
+}
+
+const spring = { damping: 3, stiffness: 50, restDelta: 0.001 };
+
+export function useFollowPointer(ref: React.RefObject<HTMLDivElement | null>) {
+  const xPoint = useMotionValue(0);
+  const yPoint = useMotionValue(0);
+  const x = useSpring(xPoint, spring);
+  const y = useSpring(yPoint, spring);
+
+  React.useEffect(() => {
+    if (!ref.current) return;
+
+    const handlePointerMove = ({ clientX, clientY }: MouseEvent) => {
+      const element = ref.current!;
+
+      frame.read(() => {
+        xPoint.set(clientX - element.offsetLeft - element.offsetWidth / 2);
+        yPoint.set(clientY - element.offsetTop - element.offsetHeight / 2);
+      });
+    };
+
+    window.addEventListener("pointermove", handlePointerMove);
+
+    return () => window.removeEventListener("pointermove", handlePointerMove);
+  }, [ref, xPoint, yPoint]);
+
+  return { x, y };
+}
 export default App;
