@@ -1,9 +1,11 @@
 import { frame } from "motion";
 import {
   AnimatePresence,
+  animate,
   motion,
   useMotionValue,
   useSpring,
+  useTransform,
 } from "motion/react";
 import React from "react";
 import { Link, Route, Routes } from "react-router";
@@ -16,6 +18,7 @@ function App() {
           <Route index element={<Enter />} />
           <Route path="exit-animation" element={<Exit />} />
           <Route path="follow-pointer" element={<FollowPointer />} />
+          <Route path="counter" element={<Counter />} />
         </Routes>
       </div>
     </div>
@@ -93,14 +96,22 @@ function FollowPointer() {
   const ref = React.useRef<HTMLDivElement>(null);
   const { x, y } = useFollowPointer(ref);
   return (
-    <motion.div
-      ref={ref}
-      className="size-20 rounded-full bg-rose-800"
-      style={{
-        x,
-        y,
-      }}
-    />
+    <>
+      <motion.div
+        ref={ref}
+        className="size-20 rounded-full bg-rose-800"
+        style={{
+          x,
+          y,
+        }}
+      />
+      <Link
+        to="/counter"
+        className="bg-purple-500 text-white px-2 py-1 rounded absolute bottom-[10%] right-[10%]"
+      >
+        next
+      </Link>
+    </>
   );
 }
 
@@ -130,5 +141,19 @@ export function useFollowPointer(ref: React.RefObject<HTMLDivElement | null>) {
   }, [ref, xPoint, yPoint]);
 
   return { x, y };
+}
+
+function Counter() {
+  const count = useMotionValue(0);
+  const rounded = useTransform(() => Math.round(count.get()));
+
+  React.useEffect(() => {
+    const controls = animate(count, 100, { duration: 5, ease: "easeInOut" });
+    return () => controls.stop();
+  }, [count]);
+
+  return (
+    <motion.div className="text-white text-2xl font-mono">{rounded}</motion.div>
+  );
 }
 export default App;
