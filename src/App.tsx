@@ -19,6 +19,7 @@ function App() {
           <Route path="exit-animation" element={<Exit />} />
           <Route path="follow-pointer" element={<FollowPointer />} />
           <Route path="counter" element={<Counter />} />
+          <Route path="ios-slider" element={<IOSSlider />} />
         </Routes>
       </div>
     </div>
@@ -153,7 +154,69 @@ function Counter() {
   }, [count]);
 
   return (
-    <motion.div className="text-white text-2xl font-mono">{rounded}</motion.div>
+    <>
+      <motion.div className="text-white text-2xl font-mono">
+        {rounded}
+      </motion.div>
+      <Link
+        to="/ios-slider"
+        className="bg-purple-500 text-white px-2 py-1 rounded absolute bottom-[10%] right-[10%]"
+      >
+        next
+      </Link>
+    </>
+  );
+}
+
+function IOSSlider() {
+  const constraintsRef = React.useRef<HTMLDivElement>(null);
+  const scaleY = useMotionValue(0);
+  const [box, setBox] = React.useState()
+
+  function getTop(ref: ) {
+if (!ref.current) return;
+
+    const boundingbox = constraintsRef.current.getBoundingClientRect();
+  }
+  React.useEffect(() => {
+    if (!constraintsRef.current) return;
+
+    const boundingbox = constraintsRef.current.getBoundingClientRect();
+    console.log({ boundingbox });
+  }, []);
+
+  return (
+    <div className="bg-gray-700 rounded-xl size-56 grid place-content-center">
+      <motion.div
+        ref={constraintsRef}
+        className="bg-black h-36 w-18 overflow-hidden rounded-3xl relative"
+      >
+        <div
+          className="bg-yellow-400  size-4 rounded-full absolute bottom-3 left-1/2 -translate-x-1/2 z-10"
+          id="sun"
+        ></div>
+        <motion.div
+          onDrag={(e, info) => {
+            const progress = info.point.y;
+            console.log({
+              progress,
+            });
+          }}
+          dragElastic={0}
+          drag="y"
+          dragConstraints={constraintsRef}
+          className="bg-red-100 w-full h-1"
+        />
+        <motion.div
+          id="brightness"
+          style={{
+            scaleY: scaleY,
+            transformOrigin: "50% 100% 0px",
+          }}
+          className="absolute inset-0 bg-gray-100"
+        ></motion.div>
+      </motion.div>
+    </div>
   );
 }
 export default App;
